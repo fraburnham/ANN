@@ -47,9 +47,9 @@
     (p/generate-swarm space particle-count fitness-fn)))
 
 (defn pso-nn [training-in training-out structure speed
-              particle-count fitness-goal max-iter]
+              particle-count fitness-goal max-iter & {:keys [chart?]}]
   (let [swarm (gen-swarm structure particle-count
                          (partial fitness training-in training-out structure))]
     (sp/pso (build-space (get-dimension structure)) swarm speed fitness-goal
            (partial fitness training-in training-out structure) max-iter
-           #_:chart? #_true)))
+           :chart? chart?)))
