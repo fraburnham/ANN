@@ -26,7 +26,7 @@
 ;so that multiclass outputs are possible
 (defn cost [training-outputs hypo-outputs]
   (* (/ 1 (count training-outputs))
-     (sum #(sq-euclidean-distance %1 %2)
+     (sum #(sq-euclidean-distance %1 %2) ;can't use this cost for bp-nn the derivatives will be off
           training-outputs hypo-outputs)))
 
 ;forward prop is done in hypothesis

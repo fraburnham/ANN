@@ -11,15 +11,14 @@
          d 0]
     (if (<= (count s) 1)
       d
-      (recur (rest s)
-             (+ d (* (first s) (second s)))))))
+      (recur (rest s) (+ d (* (first s) (second s)))))))
 
 (defn build-space [dimension]
   (repeatedly dimension (fn [] [-1 1])))
 
 ;structure will be simply (4 2 3 1) num of nodes in layer
+;YOU MUST account for the bias neurons!!!!!
 (defn position-to-nn [position structure]
-  ;YOU MUST account for the bias neurons!!!!!
   (loop [position position
          structure structure
          ret []]
@@ -33,7 +32,7 @@
 
 (defn fitness [training-ins training-outs structure position]
   (let [network (position-to-nn position structure)
-        hypo-outs (map #(n/hypothesis % network) training-ins)]
+        hypo-outs (map #(n/hypothesis % network) training-ins)] ;some pmap here could speed this up
     (n/cost training-outs hypo-outs)))
 
 (defn gen-swarm [structure particle-count fitness-fn]
@@ -41,10 +40,9 @@
         space (build-space dimension)]
     (p/generate-swarm space particle-count fitness-fn)))
 
-(defn pso-nn [training-in training-out structure
+(defn pso-nn [training-in training-out structure speed
               particle-count fitness-goal max-iter]
   (let [swarm (gen-swarm structure particle-count
                          (partial fitness training-in training-out structure))]
-    #_(println swarm)
-    (sp/pso (build-space (get-dimension structure)) swarm 0.25 fitness-goal
+    (sp/pso (build-space (get-dimension structure)) swarm speed fitness-goal
            (partial fitness training-in training-out structure) max-iter)))
