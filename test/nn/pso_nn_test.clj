@@ -27,7 +27,7 @@
 
 (defn iris-trainer [structure]
   (let [[t-in t-out] (format-csv-data "iris-data.csv")]
-    (position-to-nn (get-position (pso-nn t-in t-out structure 0.1 60 0.1 2000)) structure)))
+    (position-to-nn (get-position (pso-nn t-in t-out structure 0.1 60 0.1 300)) structure)))
 
 (defn iris-predictor [network]
   (let [[in expected] (format-csv-data "iris-test-data.csv")]
@@ -41,7 +41,7 @@
           (recur (rest in) (rest expected)))))))
 
 (defn iris-test []
-  (let [network (iris-trainer '(5 20 1))]
+  (let [network (iris-trainer '(5 5 1))]
     (println network)
     (iris-predictor network)))
 

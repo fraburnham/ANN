@@ -30,9 +30,15 @@
                (conj ret (partition (first structure)
                                     (take total-weights position))))))))
 
+(defn hypo-grains [network t-ins]
+  (map #(n/hypothesis % network) t-ins))
+
 (defn fitness [training-ins training-outs structure position]
   (let [network (position-to-nn position structure)
-        hypo-outs (map #(n/hypothesis % network) training-ins)] ;some pmap here could speed this up
+        hypo-outs (partition 1
+                             (flatten
+                               (pmap (partial hypo-grains network)
+                                     (partition-all 5 training-ins))))]
     (n/cost training-outs hypo-outs)))
 
 (defn gen-swarm [structure particle-count fitness-fn]
@@ -45,4 +51,5 @@
   (let [swarm (gen-swarm structure particle-count
                          (partial fitness training-in training-out structure))]
     (sp/pso (build-space (get-dimension structure)) swarm speed fitness-goal
-           (partial fitness training-in training-out structure) max-iter)))
+           (partial fitness training-in training-out structure) max-iter
+           #_:chart? #_true)))
