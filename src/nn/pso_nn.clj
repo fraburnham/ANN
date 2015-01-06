@@ -1,5 +1,6 @@
 (ns nn.pso-nn
   (require [pso.core :as p]
+           [pso.simple-pso :as sp]
            [nn.core :as n]))
 
 (defn get-position [particle]
@@ -14,7 +15,7 @@
              (+ d (* (first s) (second s)))))))
 
 (defn build-space [dimension]
-  (repeatedly dimension (fn [] [-10 10])))
+  (repeatedly dimension (fn [] [-1 1])))
 
 ;structure will be simply (4 2 3 1) num of nodes in layer
 (defn position-to-nn [position structure]
@@ -45,5 +46,5 @@
   (let [swarm (gen-swarm structure particle-count
                          (partial fitness training-in training-out structure))]
     #_(println swarm)
-    (p/pso (build-space (get-dimension structure)) swarm fitness-goal
+    (sp/pso (build-space (get-dimension structure)) swarm 0.25 fitness-goal
            (partial fitness training-in training-out structure) max-iter)))

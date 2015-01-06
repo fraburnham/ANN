@@ -1,10 +1,19 @@
 (ns nn.core)
 
 (defn sigmoid [x]
-  (/ 1 (+ 1 (Math/exp (- x)))))
+  (/ 1 (- 1 (Math/exp (- x)))))
 
 (defn sum [f & rest]
   (reduce + (apply (partial map f) rest)))
+
+(defn sq-diff [a b]
+  (Math/pow (- a b) 2))
+
+(defn euclidean-distance [a b]
+  (Math/sqrt (sum sq-diff a b)))
+
+(defn sq-euclidean-distance [a b]
+  (sum sq-diff a b))
 
 ;a precptron model neuron takes inputs and weights and returns
 ;the activation value
@@ -17,12 +26,8 @@
 ;so that multiclass outputs are possible
 (defn cost [training-outputs hypo-outputs]
   (* (/ 1 (count training-outputs))
-     (sum (fn [to ho] ;sum the classification errors for each training example
-            (sum (fn [y hy] ;sum the error for the individual classifications
-                   (+ (* y (Math/log hy))
-                      (* (- 1 y) (Math/log (- 1 hy)))))
-                 to ho))
-            training-outputs hypo-outputs)))
+     (sum #(sq-euclidean-distance %1 %2)
+          training-outputs hypo-outputs)))
 
 ;forward prop is done in hypothesis
 ;network is weights matrix represented as a list
